@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>Lidl Vásárló Szimulátor</title>
+  <meta name="description" content="Egyjátékos 3D vásárlós szimulátor böngészőben." />
+  <meta name="theme-color" content="#0050AA" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Betöltő képernyő -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-logo">
+        <span class="logo-blue">LIDL</span>
+        <span class="logo-sub">VÁSÁRLÓ SZIMULÁTOR</span>
+      </div>
+      <div class="loading-bar-track">
+        <div class="loading-bar-fill" id="loading-bar-fill"></div>
+      </div>
+      <div class="loading-tip" id="loading-tip">Betöltés...</div>
+    </div>
+  </div>
+
+  <!-- Főmenü -->
+  <div id="main-menu" class="screen hidden">
+    <div class="menu-panel">
+      <div class="menu-title">
+        <span class="logo-blue">LIDL</span>
+        <span class="logo-sub">VÁSÁRLÓ SZIMULÁTOR</span>
+      </div>
+      <button id="btn-start" class="btn btn-primary">Vásárlás indítása</button>
+      <button id="btn-wardrobe" class="btn btn-secondary">Öltözőszekrény</button>
+      <div class="menu-stats">
+        <div>Hűségpont: <span id="menu-loyalty-points">0</span></div>
+        <div>Legjobb eredmény: <span id="menu-best-score">0</span> Ft</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Öltözőszekrény -->
+  <div id="wardrobe-screen" class="screen hidden">
+    <div class="menu-panel">
+      <div class="menu-title small">Öltözőszekrény</div>
+      <div id="wardrobe-list" class="wardrobe-grid"></div>
+      <button id="btn-wardrobe-back" class="btn btn-secondary">Vissza</button>
+    </div>
+  </div>
+
+  <!-- Játék canvas -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD - játék közben -->
+  <div id="hud" class="hidden">
+    <div id="hud-top">
+      <div id="shopping-list-panel">
+        <div class="panel-header">Bevásárlólista</div>
+        <ul id="shopping-list-items"></ul>
+      </div>
+      <div id="stats-panel">
+        <div class="stat-row"><span class="stat-label">Kosár</span><span id="cart-value">0 Ft</span></div>
+        <div class="stat-row"><span class="stat-label">Idő</span><span id="game-timer">00:00</span></div>
+        <div class="stat-row"><span class="stat-label">Kapacitás</span><span id="cart-capacity">0 / 8</span></div>
+      </div>
+    </div>
+
+    <div id="event-banner" class="hidden"></div>
+
+    <!-- Mobil vezérlők -->
+    <div id="mobile-controls" class="hidden">
+      <div id="joystick-zone"></div>
+      <div id="action-buttons">
+        <button id="btn-interact" class="action-btn">FELVESZ</button>
+        <button id="btn-sprint" class="action-btn action-btn-secondary">FUT</button>
+      </div>
+    </div>
+
+    <div id="interact-prompt" class="hidden">E - Felvétel</div>
+  </div>
+
+  <!-- Pénztár mini-game overlay -->
+  <div id="checkout-overlay" class="screen hidden">
+    <div class="menu-panel">
+      <div class="menu-title small">Gyorspénztár</div>
+      <div id="checkout-instructions">Nyomd meg a gombot, amikor a jelző a zöld zónában van!</div>
+      <div id="checkout-bar-track">
+        <div id="checkout-zone-green"></div>
+        <div id="checkout-marker"></div>
+      </div>
+      <button id="btn-checkout-hit" class="btn btn-primary">SZKENNEL</button>
+      <div id="checkout-result"></div>
+    </div>
+  </div>
+
+  <!-- Eredmény képernyő -->
+  <div id="results-screen" class="screen hidden">
+    <div class="menu-panel">
+      <div class="menu-title small">Vásárlás összesítve</div>
+      <div id="results-breakdown"></div>
+      <button id="btn-results-continue" class="btn btn-primary">Tovább</button>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module" src="js/main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch((err) => {
+          console.warn('Service worker regisztráció sikertelen:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
