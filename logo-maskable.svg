@@ -1,0 +1,12 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bolti logó">
+  <rect x="0" y="0" width="200" height="200" fill="#0050aa" />
+  <!-- Átlós sárga csík, kicsit beljebb húzva a biztonsági zóna miatt -->
+  <polygon points="10,155 190,100 190,135 10,190" fill="#ffd100" />
+
+  <!-- Piros embléma sárga kerettel, kisebb + középre húzva a maskable safe-zone miatt -->
+  <circle cx="100" cy="96" r="48" fill="#dd0741" stroke="#ffd100" stroke-width="7" />
+
+  <text x="100" y="108" text-anchor="middle" font-family="Arial, 'Segoe UI', sans-serif"
+        font-weight="900" font-size="36" fill="#ffffff" letter-spacing="-1"
+        transform="skewX(-6) translate(-9,0)">LIDL</text>
+</svg>

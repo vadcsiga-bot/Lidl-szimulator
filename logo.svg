@@ -1,0 +1,21 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bolti logó">
+  <defs>
+    <clipPath id="roundedBg">
+      <rect x="0" y="0" width="200" height="200" rx="34" ry="34" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#roundedBg)">
+    <rect x="0" y="0" width="200" height="200" fill="#0050aa" />
+    <!-- Átlós sárga csík -->
+    <polygon points="0,150 200,90 200,140 0,200" fill="#ffd100" />
+  </g>
+
+  <!-- Piros embléma sárga kerettel -->
+  <circle cx="100" cy="92" r="62" fill="#dd0741" stroke="#ffd100" stroke-width="9" />
+
+  <!-- Szövegjel -->
+  <text x="100" y="106" text-anchor="middle" font-family="Arial, 'Segoe UI', sans-serif"
+        font-weight="900" font-size="46" fill="#ffffff" letter-spacing="-1"
+        transform="skewX(-6) translate(-11,0)">LIDL</text>
+</svg>
