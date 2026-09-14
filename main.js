@@ -300,9 +300,11 @@ function spawnNpcs(count) {
   }
 }
 
-function pickRandomShelfPosition() {
+function pickShelfPositionForCategory(category) {
   const slots = store.shelfSlots;
-  const shelf = slots[Math.floor(Math.random() * slots.length)];
+  const matching = slots.filter((s) => s.userData.categoryKey === category);
+  const pool = matching.length > 0 ? matching : slots; // ha nincs pontos találat, essünk vissza bármelyik polcra
+  const shelf = pool[Math.floor(Math.random() * pool.length)];
   const pos = shelf.userData.position;
   const jitterX = (Math.random() - 0.5) * 2.4;
   return new THREE.Vector3(pos.x + jitterX, 0, pos.z + 0.7);
@@ -310,7 +312,7 @@ function pickRandomShelfPosition() {
 
 function spawnShoppingListPickups() {
   gameState.shoppingList.forEach((item) => {
-    const position = pickRandomShelfPosition();
+    const position = pickShelfPositionForCategory(item.category);
     const pickup = spawnPickupForProduct(scene, item, position);
     pickup.id = item.id;
     activePickups.push(pickup);
@@ -320,7 +322,7 @@ function spawnShoppingListPickups() {
 function spawnDealEvent() {
   const dealPool = PRODUCTS.filter((p) => p.isDeal);
   const deal = dealPool[Math.floor(Math.random() * dealPool.length)];
-  const position = pickRandomShelfPosition();
+  const position = pickShelfPositionForCategory(deal.category);
   const pickup = spawnPickupForProduct(scene, deal, position);
   pickup.id = `event-${deal.id}-${Date.now()}`;
   pickup.isEvent = true;
