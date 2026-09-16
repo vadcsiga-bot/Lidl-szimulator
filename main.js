@@ -598,16 +598,16 @@ wardrobeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const wardrobeScene = new THREE.Scene();
 const wardrobeCamera = new THREE.PerspectiveCamera(38, 1, 0.1, 20);
-wardrobeCamera.position.set(0, 1.15, 3.4);
+wardrobeCamera.position.set(0, 1.15, -3.4);
 wardrobeCamera.lookAt(0, 1.0, 0);
 
 const wardrobeHemi = new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.0);
 wardrobeScene.add(wardrobeHemi);
 const wardrobeKeyLight = new THREE.DirectionalLight(0xffffff, 1.1);
-wardrobeKeyLight.position.set(3, 5, 4);
+wardrobeKeyLight.position.set(3, 5, -4);
 wardrobeScene.add(wardrobeKeyLight);
 const wardrobeFillLight = new THREE.DirectionalLight(0xffffff, 0.4);
-wardrobeFillLight.position.set(-3, 2, 2);
+wardrobeFillLight.position.set(-3, 2, -2);
 wardrobeScene.add(wardrobeFillLight);
 
 let wardrobePreviewGroup = new THREE.Group();
@@ -671,12 +671,68 @@ function animateWardrobePreview() {
 }
 animateWardrobePreview();
 
+// ---------- Intro sztori-crawl ----------
+const introScreen = el('intro-story-screen');
+const introCrawl = el('intro-story-crawl');
+
+function finishIntro() {
+  introScreen.classList.add('hidden');
+  showScreen(mainMenu);
+}
+el('btn-intro-skip').addEventListener('click', finishIntro);
+introCrawl.addEventListener('animationend', finishIntro);
+
+// ---------- Easter egg: 10x kattintás a logóra = 1500 hűségpont + tűzijáték ----------
+let logoClickCount = 0;
+el('menu-logo-click').addEventListener('click', () => {
+  logoClickCount += 1;
+  if (logoClickCount >= 10) {
+    logoClickCount = 0;
+    gameState.addLoyaltyPoints(1500);
+    refreshMenuStats();
+    triggerFireworks();
+  }
+});
+
+function triggerFireworks() {
+  const overlay = el('firework-overlay');
+  overlay.classList.remove('hidden');
+  const colors = ['#ffd100', '#0050aa', '#dd0741', '#ffffff'];
+  const spawned = [];
+
+  for (let i = 0; i < 46; i++) {
+    const p = document.createElement('div');
+    p.className = 'firework-particle';
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 110 + Math.random() * 230;
+    p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+    p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.left = '50%';
+    p.style.top = '40%';
+    p.style.animationDelay = `${Math.random() * 0.15}s`;
+    overlay.appendChild(p);
+    spawned.push(p);
+  }
+
+  const label = document.createElement('div');
+  label.className = 'firework-label';
+  label.textContent = '+1500 hűségpont! 🎉';
+  overlay.appendChild(label);
+  spawned.push(label);
+
+  setTimeout(() => {
+    spawned.forEach((node) => node.remove());
+    overlay.classList.add('hidden');
+  }, 1700);
+}
+
 // ---------- Indítás ----------
 loadingBarFill.style.width = '0%';
 runLoadingSequence(() => {
   loadingScreen.classList.add('hidden');
   refreshMenuStats();
-  showScreen(mainMenu);
+  introScreen.classList.remove('hidden');
 });
 
 animate();

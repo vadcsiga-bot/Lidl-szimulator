@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lidl-vasarlo-szimulator-v4';
+const CACHE_NAME = 'lidl-vasarlo-szimulator-v3';
 
 // A saját fájljainkat cache-eljük. A three.js CDN-t "network first, cache fallback"
 // stratégiával kezeljük, hogy frissülhessen, de offline is működjön az első betöltés után.

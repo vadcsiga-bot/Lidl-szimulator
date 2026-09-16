@@ -17,7 +17,7 @@ badgeTexture.colorSpace = THREE.SRGBColorSpace;
 
 function addLogoBadge(parent, { x = 0, y, z, scale = 0.16 }) {
   const geo = new THREE.CircleGeometry(scale, 20);
-  const mat = new THREE.MeshBasicMaterial({ map: badgeTexture, transparent: true });
+  const mat = new THREE.MeshBasicMaterial({ map: badgeTexture, transparent: true, side: THREE.DoubleSide });
   const badge = new THREE.Mesh(geo, mat);
   badge.position.set(x, y, z);
   parent.add(badge);
@@ -301,7 +301,7 @@ function buildTorsoMesh(color, style) {
 }
 
 function addTopAccentPatches(group, { style, accentColor, chestR, hasLogo }) {
-  const frontZ = chestR + 0.01;
+  const frontZ = -(chestR + 0.01);
 
   if (style === 'sweater') {
     // Kötött minta hatás: több kis pötty a mellkason, nem egy kilógó gyűrű
@@ -315,9 +315,9 @@ function addTopAccentPatches(group, { style, accentColor, chestR, hasLogo }) {
     });
   } else if (style === 'coat') {
     // Elöl végigfutó "gombsor" csík + szegély elöl, nem körbefutó gyűrű
-    addSurfacePatch(group, { x: 0, y: 1.0, z: chestR + 0.02, w: 0.05, h: 0.62, color: accentColor, rx: 4 });
-    addSurfacePatch(group, { x: 0, y: 0.46, z: 0.29, w: 0.4, h: 0.05, color: accentColor, rx: 4 });
-    addSurfacePatch(group, { x: 0, y: 1.38, z: 0.16, w: 0.18, h: 0.045, color: accentColor, rx: 4 });
+    addSurfacePatch(group, { x: 0, y: 1.0, z: -(chestR + 0.02), w: 0.05, h: 0.62, color: accentColor, rx: 4 });
+    addSurfacePatch(group, { x: 0, y: 0.46, z: -0.29, w: 0.4, h: 0.05, color: accentColor, rx: 4 });
+    addSurfacePatch(group, { x: 0, y: 1.38, z: -0.16, w: 0.18, h: 0.045, color: accentColor, rx: 4 });
   } else {
     // Póló: két kisebb, egymás melletti csík elöl (nem körbefutó)
     addSurfacePatch(group, { x: -0.08, y: 1.18, z: frontZ, w: 0.13, h: 0.05, color: accentColor, rx: 4 });
@@ -325,7 +325,7 @@ function addTopAccentPatches(group, { style, accentColor, chestR, hasLogo }) {
   }
 
   if (hasLogo) {
-    addLogoBadge(group, { x: 0, y: 1.28, z: frontZ + 0.015, scale: 0.13 });
+    addLogoBadge(group, { x: 0, y: 1.28, z: frontZ - 0.015, scale: 0.13 });
   }
 }
 
@@ -362,11 +362,11 @@ function buildAnatomicalHumanoid(outfit, { skinTone, hairColor }) {
   if (topAccent) {
     addTopAccentPatches(group, { style: topStyle, accentColor: topAccent, chestR: chestRAtShoulder, hasLogo: !!(top && top.hasLogo) });
   } else if (top && top.hasLogo) {
-    addLogoBadge(group, { x: 0, y: 1.28, z: chestRAtShoulder + 0.025, scale: 0.13 });
+    addLogoBadge(group, { x: 0, y: 1.28, z: -(chestRAtShoulder + 0.025), scale: 0.13 });
   }
 
-  // Finom cel-shade árnyékfolt a törzs oldalán - térfogatérzet, nem lóg ki
-  addShadowPatch(group, { x: 0, y: 1.05, z: -0.24, radius: 0.16, color: 0x000000, rotY: Math.PI });
+  // Finom cel-shade árnyékfolt a törzs oldalán (hátul) - térfogatérzet, nem lóg ki
+  addShadowPatch(group, { x: 0, y: 1.05, z: 0.24, radius: 0.16, color: 0x000000, rotY: 0 });
 
   // --- Nyak (valódi henger a fej és a törzs között - ide kerül a sál) ---
   const neckMat = new THREE.MeshStandardMaterial({ color: skinTone, roughness: 0.6 });
@@ -383,30 +383,25 @@ function buildAnatomicalHumanoid(outfit, { skinTone, hairColor }) {
 
   [-1, 1].forEach((side) => {
     const xBase = side * shoulderX;
-    const tilt = side > 0 ? -0.2 : 0.2;
 
     if (isShortSleeve) {
       const upperArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.095, 0.2, 4, 6), armMat);
       upperArm.position.set(xBase, SHOULDER_Y - 0.14, 0);
-      upperArm.rotation.z = tilt;
       upperArm.castShadow = true;
       group.add(upperArm);
 
       const forearm = new THREE.Mesh(new THREE.CapsuleGeometry(0.072, 0.24, 4, 6), skinMat);
-      forearm.position.set(xBase * 1.08, SHOULDER_Y - 0.44, 0);
-      forearm.rotation.z = tilt;
+      forearm.position.set(xBase, SHOULDER_Y - 0.44, 0);
       forearm.castShadow = true;
       group.add(forearm);
     } else {
       const upperArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.32, 4, 6), armMat);
       upperArm.position.set(xBase, SHOULDER_Y - 0.2, 0);
-      upperArm.rotation.z = tilt;
       upperArm.castShadow = true;
       group.add(upperArm);
 
       const forearm = new THREE.Mesh(new THREE.CapsuleGeometry(0.075, 0.28, 4, 6), armMat);
-      forearm.position.set(xBase * 1.1, SHOULDER_Y - 0.56, 0);
-      forearm.rotation.z = tilt;
+      forearm.position.set(xBase, SHOULDER_Y - 0.56, 0);
       forearm.castShadow = true;
       group.add(forearm);
 
@@ -417,13 +412,13 @@ function buildAnatomicalHumanoid(outfit, { skinTone, hairColor }) {
           new THREE.MeshStandardMaterial({ color: topAccent, roughness: 0.6 })
         );
         cuff.rotation.x = Math.PI / 2;
-        cuff.position.set(xBase * 1.13, SHOULDER_Y - 0.7, 0);
+        cuff.position.set(xBase, SHOULDER_Y - 0.7, 0);
         group.add(cuff);
       }
     }
 
     const hand = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), skinMat);
-    hand.position.set(xBase * (isShortSleeve ? 1.1 : 1.13), SHOULDER_Y - (isShortSleeve ? 0.58 : 0.72), 0);
+    hand.position.set(xBase, SHOULDER_Y - (isShortSleeve ? 0.58 : 0.72), 0);
     hand.castShadow = true;
     group.add(hand);
   });
@@ -449,26 +444,25 @@ function buildAnatomicalHumanoid(outfit, { skinTone, hairColor }) {
 
   // --- Arc: szemek (fénypont-tükröződéssel), szemöldök, mosoly - CSAK a főszereplőn ---
   const eyeY = HEAD_CENTER_Y - 0.01;
-  const eyeZ = HEAD_RADIUS - 0.03;
+  const eyeZ = -(HEAD_RADIUS - 0.03);
   [-1, 1].forEach((side) => {
     const eyeX = side * 0.09;
-    const eye = new THREE.Mesh(new THREE.CircleGeometry(0.032, 12), new THREE.MeshBasicMaterial({ color: 0x1a1a1a }));
+    const eye = new THREE.Mesh(new THREE.CircleGeometry(0.032, 12), new THREE.MeshBasicMaterial({ color: 0x1a1a1a, side: THREE.DoubleSide }));
     eye.position.set(eyeX, eyeY, eyeZ);
     group.add(eye);
 
-    const highlight = new THREE.Mesh(new THREE.CircleGeometry(0.011, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-    highlight.position.set(eyeX + 0.008, eyeY + 0.008, eyeZ + 0.002);
+    const highlight = new THREE.Mesh(new THREE.CircleGeometry(0.011, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }));
+    highlight.position.set(eyeX + 0.008, eyeY + 0.008, eyeZ - 0.002);
     group.add(highlight);
 
     const browMat = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.7 });
     const brow = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.014, 0.01), browMat);
-    brow.position.set(eyeX, eyeY + 0.06, eyeZ + 0.01);
+    brow.position.set(eyeX, eyeY + 0.06, eyeZ - 0.01);
     brow.rotation.z = side * -0.18;
     group.add(brow);
 
-    const cheek = new THREE.Mesh(new THREE.CircleGeometry(0.045, 10), new THREE.MeshBasicMaterial({ color: 0xff9d80, transparent: true, opacity: 0.4 }));
-    cheek.position.set(side * 0.16, eyeY - 0.05, eyeZ - 0.03);
-    cheek.rotation.y = side * 0.6;
+    const cheek = new THREE.Mesh(new THREE.CircleGeometry(0.045, 10), new THREE.MeshBasicMaterial({ color: 0xff9d80, transparent: true, opacity: 0.4, side: THREE.DoubleSide }));
+    cheek.position.set(side * 0.16, eyeY - 0.05, eyeZ + 0.03);
     group.add(cheek);
   });
 
@@ -477,30 +471,34 @@ function buildAnatomicalHumanoid(outfit, { skinTone, hairColor }) {
     new THREE.MeshStandardMaterial({ color: 0xa8563f })
   );
   smile.rotation.z = Math.PI + Math.PI * 0.15;
-  smile.position.set(0, eyeY - 0.09, eyeZ - 0.005);
+  smile.position.set(0, eyeY - 0.09, eyeZ + 0.005);
   group.add(smile);
 
   // --- Sapka ---
   if (cap) {
+    const capRadius = HEAD_RADIUS + 0.015; // szinte pont fejméret - nem lóg el
+    const capY = HEAD_CENTER_Y + 0.04; // dóm alja (egyenlítője) - szorosan a fejhez simulva
+
     const capMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(HEAD_RADIUS + 0.025, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.5),
+      new THREE.SphereGeometry(capRadius, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.5),
       new THREE.MeshStandardMaterial({ color: cap.color, roughness: 0.6 })
     );
-    capMesh.position.y = HEAD_CENTER_Y + 0.16;
+    capMesh.position.y = capY;
     group.add(capMesh);
 
-    if (cap.accentColor) {
-      const brim = new THREE.Mesh(
-        new THREE.TorusGeometry(HEAD_RADIUS + 0.025, 0.018, 8, 20),
-        new THREE.MeshStandardMaterial({ color: cap.accentColor, roughness: 0.6 })
-      );
-      brim.rotation.x = Math.PI / 2;
-      brim.position.y = HEAD_CENTER_Y + 0.16;
-      group.add(brim);
-    }
+    // Előre néző napellenző (silt) a körbefutó gyűrű helyett - egyértelműen
+    // az elülső (-Z) irányba mutat, ahogy az arc és a kocsi is
+    const billColor = cap.accentColor || cap.color;
+    const bill = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.018, 0.1),
+      new THREE.MeshStandardMaterial({ color: billColor, roughness: 0.6 })
+    );
+    bill.position.set(0, capY - 0.015, -(capRadius * 0.82));
+    bill.rotation.x = -0.18;
+    group.add(bill);
 
     if (cap.hasLogo) {
-      addLogoBadge(group, { y: HEAD_CENTER_Y + 0.19, z: HEAD_RADIUS + 0.01, scale: 0.085 });
+      addLogoBadge(group, { y: capY + 0.07, z: -(capRadius - 0.01), scale: 0.08 });
     }
   }
 
@@ -530,7 +528,7 @@ function buildAnatomicalHumanoid(outfit, { skinTone, hairColor }) {
       new THREE.BoxGeometry(0.07, 0.22, 0.02),
       new THREE.MeshStandardMaterial({ color: scarf.color, roughness: 0.7 })
     );
-    tail.position.set(0.05, scarfY - 0.16, 0.15);
+    tail.position.set(0.05, scarfY - 0.16, -0.15);
     tail.rotation.x = -0.15;
     group.add(tail);
   }

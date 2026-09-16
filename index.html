@@ -30,11 +30,25 @@
     </div>
   </div>
 
+  <!-- Intro sztori (Star Wars-szerű, alulról felcsúszó szöveg, kék alapon fehérrel) -->
+  <div id="intro-story-screen" class="hidden">
+    <button id="btn-intro-skip" class="btn-skip-intro">Kihagyás ⏭</button>
+    <div id="intro-story-crawl">
+      <p>Kezdetben csak egy voltál a sok szürke vásárló közül. Szürke kabát, szürke nadrág, szürke hétköznapok — senki sem nézett utánad kétszer a zöldséges polcnál.</p>
+      <p>Aztán egy nap észrevetted: <strong>vannak, akik másképp tolják a kocsit.</strong> Magabiztosan, célratörően, mintha ismernék a bolt minden zegzugát. Kék-sárga cipőben. Logós pulcsiban. Ők a törzsvásárlók — a bolt igazi legendái.</p>
+      <p>Innentől a te sztorid is ez: minden összegyűjtött termékkel, minden bepattant gyorspénztári kombóval hűségpontot szerzel. Ezekből pedig apránként lecserélheted a szürke ruhákat valódi, márkás felszerelésre — amíg végül te magad is a bolt élő legendájává nem válsz.</p>
+      <p>Nem sietünk. A stílus időbe telik. De minden egyes bevásárlás közelebb visz. 🛒✨</p>
+    </div>
+  </div>
+
+  <!-- Tűzijáték overlay (easter egg) -->
+  <div id="firework-overlay" class="hidden"></div>
+
   <!-- Főmenü -->
   <div id="main-menu" class="screen hidden">
     <div class="menu-panel">
       <div class="menu-title">
-        <img src="logo.png" alt="Bolti logó" class="brand-logo brand-logo-menu" />
+        <img id="menu-logo-click" src="logo.png" alt="Bolti logó" class="brand-logo brand-logo-menu" />
         <span class="logo-sub">VÁSÁRLÓ SZIMULÁTOR</span>
       </div>
       <button id="btn-start" class="btn btn-primary">Vásárlás indítása</button>
