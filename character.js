@@ -26,19 +26,20 @@ function addLogoBadge(parent, { x = 0, y, z, scale = 0.16 }) {
 
 // Kicsi, sík "folt" a ruha felületéhez simulva (minta/csík helyett) - nem lóg ki
 // a sziluettből, mert csak a testtől kifelé néző oldalra kerül, kis méretben.
-function addSurfacePatch(parent, { x = 0, y, z, w = 0.1, h = 0.06, color, rx = 3 }) {
+function addSurfacePatch(parent, { x = 0, y, z, w = 0.1, h = 0.06, color, rx = 0.012 }) {
   const shape = new THREE.Shape();
   const hw = w / 2;
   const hh = h / 2;
-  shape.moveTo(-hw + rx, -hh);
-  shape.lineTo(hw - rx, -hh);
-  shape.quadraticCurveTo(hw, -hh, hw, -hh + rx);
-  shape.lineTo(hw, hh - rx);
-  shape.quadraticCurveTo(hw, hh, hw - rx, hh);
-  shape.lineTo(-hw + rx, hh);
-  shape.quadraticCurveTo(-hw, hh, -hw, hh - rx);
-  shape.lineTo(-hw, -hh + rx);
-  shape.quadraticCurveTo(-hw, -hh, -hw + rx, -hh);
+  const r = Math.min(rx, hw * 0.9, hh * 0.9); // biztonsági korlát - rx sosem lehet nagyobb a folt saját méreténél
+  shape.moveTo(-hw + r, -hh);
+  shape.lineTo(hw - r, -hh);
+  shape.quadraticCurveTo(hw, -hh, hw, -hh + r);
+  shape.lineTo(hw, hh - r);
+  shape.quadraticCurveTo(hw, hh, hw - r, hh);
+  shape.lineTo(-hw + r, hh);
+  shape.quadraticCurveTo(-hw, hh, -hw, hh - r);
+  shape.lineTo(-hw, -hh + r);
+  shape.quadraticCurveTo(-hw, -hh, -hw + r, -hh);
   const geo = new THREE.ShapeGeometry(shape);
   const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.7, side: THREE.DoubleSide });
   const patch = new THREE.Mesh(geo, mat);
@@ -311,17 +312,17 @@ function addTopAccentPatches(group, { style, accentColor, chestR, hasLogo }) {
       [-0.1, 1.0], [0.1, 1.0],
     ];
     dots.forEach(([x, y]) => {
-      addSurfacePatch(group, { x, y, z: frontZ, w: 0.055, h: 0.055, color: accentColor, rx: 27 });
+      addSurfacePatch(group, { x, y, z: frontZ, w: 0.055, h: 0.055, color: accentColor, rx: 0.02 });
     });
   } else if (style === 'coat') {
     // Elöl végigfutó "gombsor" csík + szegély elöl, nem körbefutó gyűrű
-    addSurfacePatch(group, { x: 0, y: 1.0, z: -(chestR + 0.02), w: 0.05, h: 0.62, color: accentColor, rx: 4 });
-    addSurfacePatch(group, { x: 0, y: 0.46, z: -0.29, w: 0.4, h: 0.05, color: accentColor, rx: 4 });
-    addSurfacePatch(group, { x: 0, y: 1.38, z: -0.16, w: 0.18, h: 0.045, color: accentColor, rx: 4 });
+    addSurfacePatch(group, { x: 0, y: 1.0, z: -(chestR + 0.02), w: 0.05, h: 0.62, color: accentColor, rx: 0.015 });
+    addSurfacePatch(group, { x: 0, y: 0.46, z: -0.29, w: 0.4, h: 0.05, color: accentColor, rx: 0.015 });
+    addSurfacePatch(group, { x: 0, y: 1.38, z: -0.16, w: 0.18, h: 0.045, color: accentColor, rx: 0.015 });
   } else {
     // Póló: két kisebb, egymás melletti csík elöl (nem körbefutó)
-    addSurfacePatch(group, { x: -0.08, y: 1.18, z: frontZ, w: 0.13, h: 0.05, color: accentColor, rx: 4 });
-    addSurfacePatch(group, { x: 0.08, y: 1.18, z: frontZ, w: 0.13, h: 0.05, color: accentColor, rx: 4 });
+    addSurfacePatch(group, { x: -0.08, y: 1.18, z: frontZ, w: 0.13, h: 0.05, color: accentColor, rx: 0.015 });
+    addSurfacePatch(group, { x: 0.08, y: 1.18, z: frontZ, w: 0.13, h: 0.05, color: accentColor, rx: 0.015 });
   }
 
   if (hasLogo) {
@@ -476,8 +477,8 @@ function buildAnatomicalHumanoid(outfit, { skinTone, hairColor }) {
 
   // --- Sapka ---
   if (cap) {
-    const capRadius = HEAD_RADIUS + 0.015; // szinte pont fejméret - nem lóg el
-    const capY = HEAD_CENTER_Y + 0.04; // dóm alja (egyenlítője) - szorosan a fejhez simulva
+    const capRadius = HEAD_RADIUS + 0.045; // egy kicsit nagyobb, mint a fej - jól látható, de nem eláll
+    const capY = HEAD_CENTER_Y + 0.02; // dóm alja (egyenlítője) - szorosan a fejhez simulva
 
     const capMesh = new THREE.Mesh(
       new THREE.SphereGeometry(capRadius, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.5),
@@ -490,7 +491,7 @@ function buildAnatomicalHumanoid(outfit, { skinTone, hairColor }) {
     // az elülső (-Z) irányba mutat, ahogy az arc és a kocsi is
     const billColor = cap.accentColor || cap.color;
     const bill = new THREE.Mesh(
-      new THREE.BoxGeometry(0.16, 0.018, 0.1),
+      new THREE.BoxGeometry(0.19, 0.02, 0.12),
       new THREE.MeshStandardMaterial({ color: billColor, roughness: 0.6 })
     );
     bill.position.set(0, capY - 0.015, -(capRadius * 0.82));
@@ -498,7 +499,7 @@ function buildAnatomicalHumanoid(outfit, { skinTone, hairColor }) {
     group.add(bill);
 
     if (cap.hasLogo) {
-      addLogoBadge(group, { y: capY + 0.07, z: -(capRadius - 0.01), scale: 0.08 });
+      addLogoBadge(group, { y: capY + 0.08, z: -(capRadius - 0.01), scale: 0.095 });
     }
   }
 
